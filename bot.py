@@ -9,12 +9,14 @@ from src.data.talents import Handeln, Kampf, Soziales, Wissen
 from src.character import Character
 from src.group import Group
 
-grp = Group()
-
 bot = lightbulb.BotApp(
     token=connection["token"],
     default_enabled_guilds=connection["default_enabled_guilds"]
 )
+
+#################################################
+# Dungeon Master
+#################################################
 
 @bot.command
 @lightbulb.command("dm", "Dungeon Master command group.")
@@ -50,10 +52,9 @@ async def attack(ctx):
     dmg, block = c.beingAttacked(int(ctx.options.wuerfel), int(ctx.options.bonus))
     await ctx.respond(f"Charakter {ctx.options.name} bekommt {dmg} Schaden ({block} geblockt).")
 
-@bot.listen(hikari.StartedEvent)
-async def on_started(event):
-    print("bot has started!")
-
+#################################################
+# Character Creation/Deletion
+#################################################
 
 
 @bot.command
@@ -62,24 +63,6 @@ async def on_started(event):
 async def character(ctx):
     pass
 
-#@character.child
-#@lightbulb.command("subcommand", "Group Subcommand")
-#@lightbulb.implements(lightbulb.SlashSubCommand)
-
-
-
-@character.child
-@lightbulb.option("name", "name of character to show")
-@lightbulb.command("show", "prints the character list")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def list(ctx):
-    not_found = True
-    for c in grp.get_characters():
-        if c.name == ctx.options.name:
-            not_found = False
-            await ctx.respond(str(c))
-    if not_found:
-        await ctx.respond("No such character found to show!")
 
 @character.child
 @lightbulb.option("bio", "biography of the character, can be a longer description")
@@ -120,63 +103,15 @@ async def delete(ctx):
     else:
         await ctx.respond("you did not type 'CONFIRM' correctly.")
 
-# @character.child
-# @lightbulb.option("talent_points", "talent points you want to spend")
-# @lightbulb.option("knowledge_name", "knowledge name")
-# @lightbulb.option("character_name", "character name")
-# @lightbulb.command("skill_knowledge", "skill knowledge")
-# @lightbulb.implements(lightbulb.SlashSubCommand)
-# async def skill_knowledge(ctx):
-#     skill_success = False
-#     for char in grp.get_characters():
-#         if char.name == ctx.options.character_name:
-#             enough_talent_points = char.skill_knowledge(ctx.options.knowledge_name, int(ctx.options.talent_points))
-#             if not enough_talent_points:
-#                 await ctx.respond("Not enough talent points")
-#             else:
-#                 skill_success = True
-#                 await ctx.respond("Skilled successfully.")
-#     if not skill_success:
-#         await ctx.respond("Failed to skill knowledge.")
-#
-# @character.child
-# @lightbulb.option("talent_points", "talent points you want to spend")
-# @lightbulb.option("action_name", "action name")
-# @lightbulb.option("character_name", "character name")
-# @lightbulb.command("skill_action", "skill action")
-# @lightbulb.implements(lightbulb.SlashSubCommand)
-# async def skill_action(ctx):
-#     skill_success = False
-#     for char in grp.get_characters():
-#         if char.name == ctx.options.character_name:
-#             enough_talent_points = char.skill_action(ctx.options.action_name, int(ctx.options.talent_points))
-#             if not enough_talent_points:
-#                 await ctx.respond("Not enough talent points")
-#             else:
-#                 skill_success = True
-#                 await ctx.respond("Skilled successfully.")
-#     if not skill_success:
-#         await ctx.respond("Failed to skill action.")
-#
-# @character.child
-# @lightbulb.option("talent_points", "talent points you want to spend")
-# @lightbulb.option("social_name", "social name")
-# @lightbulb.option("character_name", "character name")
-# @lightbulb.command("skill_social", "skill social")
-# @lightbulb.implements(lightbulb.SlashSubCommand)
-# async def skill_knowledge(ctx):
-#     skill_success = False
-#     for char in grp.get_characters():
-#         if char.name == ctx.options.character_name:
-#             enough_talent_points = char.skill_social(ctx.options.social_name, int(ctx.options.talent_points))
-#             if not enough_talent_points:
-#                 await ctx.respond("Not enough talent points")
-#             else:
-#                 skill_success = True
-#                 await ctx.respond("Skilled successfully.")
-#     if not skill_success:
-#         await ctx.respond("Failed to skill knowledge.")
+#################################################
+# Schaden/Heilung würfeln
+#################################################
 
+
+
+#################################################
+# Proben würfeln
+#################################################s
 
 @character.child
 @lightbulb.option("bonus", "Bonus/Malus auf die Probe je nach Kontext.")
@@ -242,38 +177,10 @@ async def skill(ctx):
     r = c.skill(ctx.options.talent, int(ctx.options.points))
     await ctx.respond(r)
 
-@character.child
-@lightbulb.option("betrag", "Goldbetrag")
-@lightbulb.option("character_name", "character name")
-@lightbulb.command("gold", "Goldbetrag ändern")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def gold(ctx):
-    for char in grp.get_characters():
-        if char.name == ctx.options.character_name:
-            answer = char.changeGold(int(ctx.options.betrag))
-            await ctx.respond(answer)
 
-@character.child
-@lightbulb.option("betrag", "Expbetrag")
-@lightbulb.option("character_name", "character name")
-@lightbulb.command("exp", "Exp ändern")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def exp(ctx):
-    for char in grp.get_characters():
-        if char.name == ctx.options.character_name:
-            answer = char.changeExp(int(ctx.options.betrag))
-            await ctx.respond(answer)
-
-@character.child
-@lightbulb.option("betrag", "Lebenspunkte")
-@lightbulb.option("character_name", "character name")
-@lightbulb.command("leben", "Lebenspunkte anpassen")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def leben(ctx):
-    for char in grp.get_characters():
-        if char.name == ctx.options.character_name:
-            answer = char.changeLife(int(ctx.options.betrag))
-            await ctx.respond(answer)
+#################################################
+# Gruppen und Charakteranzeige
+#################################################
 
 @bot.command
 @lightbulb.command("g", "group display")
@@ -281,11 +188,23 @@ async def leben(ctx):
 async def g(ctx):
     await ctx.respond(str(grp))
 
-# @bot.command
-# @lightbulb.command("group", "Group command group.")
-# @lightbulb.implements(lightbulb.SlashCommandGroup)
-# async def group(ctx):
-#     pass
+
+@character.child
+@lightbulb.option("name", "name of character to show")
+@lightbulb.command("show", "prints the character list")
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def list(ctx):
+    not_found = True
+    for c in grp.get_characters():
+        if c.name == ctx.options.name:
+            not_found = False
+            await ctx.respond(str(c))
+    if not_found:
+        await ctx.respond("No such character found to show!")
+
+#################################################
+# Kampf
+#################################################
 
 @bot.command
 @lightbulb.command("fight", "Initiativ-Werte berechnen.")
@@ -302,55 +221,9 @@ async def fight(ctx):
         print_str += f"\n{i+1}. {t[0]} ({t[1]})"
     await ctx.respond(print_str)
 
-# @group.child
-# @lightbulb.command("save", "Alle Charaktere speichern.")
-# @lightbulb.implements(lightbulb.SlashSubCommand)
-# async def save(ctx):
-#     import os.path
-#     # delete old data
-#     cwd = os.getcwd() + "/chars"
-#     for f in os.listdir(cwd):
-#         if not f.endswith(".json"):
-#             continue
-#         os.remove(os.path.join(cwd, f))
-#     # save new data
-#     current_id = 1
-#     for c in grp.get_characters():
-#         fname = f"chars/{current_id}.json"
-#         while os.path.isfile(fname):
-#             current_id += 1
-#             fname = f"chars/{current_id}.json"
-#         c.save_to_json(fname)
-#     await ctx.respond("Characters saved successfully!")
-#
-#
-# @group.child
-# @lightbulb.command("load", "Alle Charaktere laden.")
-# @lightbulb.implements(lightbulb.SlashSubCommand)
-# async def load(ctx):
-#     from os import listdir
-#     from os.path import isfile, join
-#     onlyfiles = [f for f in listdir("chars") if isfile(join("chars", f))]
-#     chars = [Character(id=int(fname.split(".")[0])).load_from_json("chars/" + fname) for fname in onlyfiles]
-#     grp.set_characters(chars)
-#     for char in chars:
-#         char.set_group(grp)
-#     await ctx.respond("Characters loaded successfully!")
-
-# @group.child
-# @lightbulb.command("list", "prints the character list")
-# @lightbulb.implements(lightbulb.SlashSubCommand)
-# async def list(ctx):
-#     await ctx.respond(str(grp))
-
-
-
-@bot.command
-@lightbulb.command("lol", "lllooollll.")
-@lightbulb.implements(lightbulb.UserCommand)
-async def lol(ctx):
-    print(str(ctx.raw_options))
-    ctx.respond("loli")
+#################################################
+# Anzeige der möglichen Talentgruppen
+#################################################
 
 @bot.command
 @lightbulb.command("tg", "Talentgruppen.")
@@ -433,17 +306,12 @@ async def tg_besonnen(ctx):
     await ctx.respond(helper_tg_spec("besonnen"))
 
 
-
-
-
-
-
-#@lightbulb.command("fight", "Initiativ-Werte berechnen.")
-#@lightbulb.implements(lightbulb.SlashSubCommand)
-#async def fight(ctx):
-
+# Initialisiere Gruppe mit gesicherten Daten
 from os import listdir
 from os.path import isfile, join
+
+grp = Group()
+
 onlyfiles = [f for f in listdir("chars") if isfile(join("chars", f))]
 chars = [Character(id=int(fname.split(".")[0])).load_from_json("chars/" + fname) for fname in onlyfiles]
 grp.set_characters(chars)

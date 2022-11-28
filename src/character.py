@@ -336,55 +336,6 @@ class Character:
             relevanter_wert = max(_relevanter_wert, relevanter_wert)
         return self.probe(relevanter_wert, name)
 
-    def skill_knowledge(self, name: str, talent_points: int):
-        current_points = self.knowledge[name] if name in self.knowledge else 0
-        if current_points + talent_points > 70:
-            talent_points = 70 - current_points
-        if self.talent_points >= talent_points:
-            self.talent_points -= talent_points
-            if name in self.knowledge:
-                self.knowledge[name] += talent_points
-            else:
-                self.knowledge[name] = talent_points
-            self.refresh_stats()
-            self.save()
-            return True
-        else:
-            return False
-
-
-    def skill_action(self, name: str, talent_points: int):
-        current_points = self.action[name] if name in self.action else 0
-        if current_points + talent_points > 70:
-            talent_points = 70 - current_points
-        if self.talent_points >= talent_points:
-            self.talent_points -= talent_points
-            if name in self.action:
-                self.action[name] += talent_points
-            else:
-                self.action[name] = talent_points
-            self.refresh_stats()
-            self.save()
-            return True
-        else:
-            return False
-
-    def skill_social(self, name: str, talent_points: int):
-        current_points = self.social[name] if name in self.social else 0
-        if current_points + talent_points > 70:
-            talent_points = 70 - current_points
-        if self.talent_points >= talent_points:
-            self.talent_points -= talent_points
-            if name in self.social:
-                self.social[name] += talent_points
-            else:
-                self.social[name] = talent_points
-            self.refresh_stats()
-            self.save()
-            return True
-        else:
-            return False
-
     def refresh_stats(self):
         knowledge_sum = 0 if not self.knowledge else sum([val for _, val in self.knowledge.items()])
         fight_sum = 0 if not self.fight else sum([val for _, val in self.fight.items()])
