@@ -67,23 +67,26 @@ async def character(ctx):
 @character.child
 @lightbulb.option("bio", "biography of the character, can be a longer description")
 @lightbulb.option("sex", "gender of the character")
-@lightbulb.option("role", "class of the character")
+@lightbulb.option("spec", "spec of the character")
 @lightbulb.option("age", "age of the character")
 @lightbulb.option("name", "name of the character")
 @lightbulb.command("create", "creates a character")
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def create(ctx):
-    if ctx.options.role not in Begabungen:
-        await ctx.respond(f"{ctx.options.role} is not a valid spec. All available specs are as follows: {str(Begabungen)}.")
+    if ctx.options.spec not in Begabungen:
+        await ctx.respond(f"{ctx.options.spec} is not a valid spec. All available specs are as follows: {str(Begabungen)}.")
+        return
     new_character = Character(
+        user_id=ctx.author.id,
         name=ctx.options.name,
         age=int(ctx.options.age),
-        spec=ctx.options.role,
+        spec=ctx.options.spec,
         sex=ctx.options.sex,
         bio=ctx.options.bio,
         grp=grp,
     )
     grp.add_character(new_character)
+    grp.save()
     new_character.set_group(grp)
     await ctx.respond("Character has been created successfully!")
 
@@ -113,30 +116,29 @@ async def delete(ctx):
 # Proben würfeln
 #################################################s
 
-@character.child
+@bot.command
 @lightbulb.option("bonus", "Bonus/Malus auf die Probe je nach Kontext.")
 @lightbulb.option("talent_name", "talent name")
-@lightbulb.option("character_name", "character name")
-@lightbulb.command("probe", "probe")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def probe(ctx):
-    for char in grp.get_characters():
-        if char.name == ctx.options.character_name:
-            answer = char.probe_allgemein(ctx.options.talent_name, int(ctx.options.bonus))
-            await ctx.respond(answer)
+@lightbulb.command("p", "probe")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def p(ctx):
+    c = grp.get_character_by_user_id(ctx.author.id)
+    answer = c.probe_allgemein(ctx.options.talent_name, int(ctx.options.bonus))
+    await ctx.respond(answer)
 
 
-@character.child
+@bot.command
 @lightbulb.option("points", "points")
 @lightbulb.option("talent", "Talent")
-@lightbulb.option("character", "character name or id")
+#@lightbulb.option("character", "character name or id")
 @lightbulb.command("skill", "Skill")
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.SlashCommand)
 async def skill(ctx):
-    try:
-        c = grp.get_character_by_id(int(ctx.options.character))
-    except:
-        c = grp.get_character_by_name(ctx.options.character)
+    # try:
+    #     c = grp.get_character_by_id(int(ctx.options.character))
+    # except:
+    #     c = grp.get_character_by_name(ctx.options.character)
+    c = grp.get_character_by_user_id(ctx.author.id)
 
     r = c.skill(ctx.options.talent, int(ctx.options.points))
     await ctx.respond(r)

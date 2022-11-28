@@ -6,7 +6,8 @@ from src.data.talents import Handeln, Kampf, Soziales, Wissen
 
 
 class Character:
-    def __init__(self, name: str = "", age: int = None, spec: str = "", sex: str = "", bio: str = "", id: int = None, grp = None):
+    def __init__(self, name: str = "", age: int = None, spec: str = "", sex: str = "", bio: str = "", id: int = None, user_id: int = None, grp = None):
+        self.user_id = user_id
         self.id = id
         self.grp = grp
 
@@ -38,7 +39,6 @@ class Character:
         self.initiative_roll = 0
 
         self.refresh_stats()  # calculates self.action_points, self.action_gbp, ...
-        self.save()
 
     def item_stats(self):
         stat_dict = {}
@@ -114,7 +114,7 @@ class Character:
         return self.id
 
     def get_member_variables_to_save(self):
-        return ["pre_title", "after_title", "name", "age", "spec", "sex", "bio", "talent_points", "knowledge", "fight", "action", "social", "exp", "gold", "life", "armor", "mainhand", "offhand", "jewelery"]
+        return ["pre_title", "after_title", "name", "age", "spec", "sex", "bio", "talent_points", "knowledge", "fight", "action", "social", "exp", "gold", "life", "armor", "mainhand", "offhand", "jewelery", "user_id"]
 
     def save_to_json(self, path):
         # data_dict = {
@@ -163,7 +163,10 @@ class Character:
         # self.offhand = data_dict.offhand
         # self.jewelery = data_dict.jewelery
         for var_name in self.get_member_variables_to_save():
-            setattr(self, var_name, data_dict[var_name])
+            if var_name in data_dict:
+                setattr(self, var_name, data_dict[var_name])
+            else:
+                setattr(self, var_name, None)
         self.refresh_stats()
         return self
 
@@ -272,8 +275,13 @@ class Character:
         return exists, dict_name
 
 
-    def probe(self, relevanter_wert: int, probe_name: str):
-        add_str = f" (Probe auf {relevanter_wert})"
+    def probe(self, relevanter_wert: int, bonus: int, probe_name: str):
+        if bonus == 0:
+            add_str = f" (Probe auf {relevanter_wert})"
+        elif bonus < 0:
+            add_str = f" (Probe auf {relevanter_wert + bonus} - {bonus} Malus)"
+        else:
+            add_str = f" (Probe auf {relevanter_wert - bonus} + {bonus} Bonus)"
         gegenwert = 100 - relevanter_wert
         # Probe ausführen
         wuerfelwurf = random.randint(1, 100)
@@ -302,7 +310,7 @@ class Character:
             _relevanter_wert = getattr(self, dict_name)[name] + erschwert
             relevanter_wert = max(_relevanter_wert, relevanter_wert)
 
-        return self.probe(relevanter_wert, name)
+        return self.probe(relevanter_wert, erschwert, name)
 
     def refresh_stats(self):
         knowledge_sum = 0 if not self.knowledge else sum([val for _, val in self.knowledge.items()])

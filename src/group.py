@@ -32,6 +32,11 @@ class Group:
             if c.get_id() == id:
                 return c
 
+    def get_character_by_user_id(self, user_id: int):
+        for c in self.characters:
+            if c.user_id == user_id:
+                return c
+
     def save(self):
         import os.path
         # delete old data
