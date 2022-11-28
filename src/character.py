@@ -52,10 +52,6 @@ class Character:
                     stat_dict[stat] += item[stat]
         return stat_dict
 
-    def save(self):
-        if self.grp is not None:
-            self.grp.save()
-
     def set_group(self, grp):
         self.grp = grp
 
@@ -109,67 +105,13 @@ class Character:
         self.refresh_stats()
         return f"{self.name} successfully skilled {success}/{talent_points} talent points into {skill_name} ({dict_name}). You have spent for this {cost_sum} exp ({self.exp} exp remaining). Your new skill level for {skill_name} is {getattr(self, dict_name)[skill_name]}."
 
-
     def get_id(self):
         return self.id
 
-    def get_member_variables_to_save(self):
-        return ["pre_title", "after_title", "name", "age", "spec", "sex", "bio", "talent_points", "knowledge", "fight", "action", "social", "exp", "gold", "life", "armor", "mainhand", "offhand", "jewelery", "user_id"]
-
-    def save_to_json(self, path):
-        # data_dict = {
-        #     pre_title: self.pre_title,
-        #     after_title: self.after_title,
-        #     name: self.name,
-        #     age: self.age,
-        #     spec: self.spec,
-        #     sex: self.sex,
-        #     bio: self.bio,
-        #     talent_points: self.talent_points,
-        #     knowledge: self.knowledge,
-        #     action: self.action,
-        #     social: self.social,
-        #     exp: self.exp,
-        #     gold: self.gold,
-        #     life: self.life,  # refresh when?
-        #     armor: self.armor,
-        #     mainhand: self.mainhand,
-        #     offhand: self.offhand,
-        #     jewelery: self.jewelery,
-        # }
-        data_dict = {var_name: getattr(self, var_name) for var_name in self.get_member_variables_to_save()}
-        with open(path, 'w') as f:
-            json.dump(data_dict, f)
-
-    def load_from_json(self, path):
-        with open(path, 'r') as f:
-            data_dict = json.load(f)
-        # self.pre_title = data_dict.pre_title
-        # self.after_title = data_dict.after_title
-        # self.name = data_dict.name
-        # self.age = data_dict.age
-        # self.spec = data_dict.spec
-        # self.sex = data_dict.sex
-        # self.bio = data_dict.bio
-        # self.talent_points = data_dict.talent_points
-        # self.knowledge = data_dict.knowledge
-        # self.action = data_dict.action
-        # self.social = data_dict.social
-        # self.exp = data_dict.exp
-        # self.gold = data_dict.gold
-        # self.life = data_dict.life
-        # self.armor = data_dict.armor
-        # self.mainhand = data_dict.mainhand
-        # self.offhand = data_dict.offhand
-        # self.jewelery = data_dict.jewelery
-        for var_name in self.get_member_variables_to_save():
-            if var_name in data_dict:
-                setattr(self, var_name, data_dict[var_name])
-            else:
-                setattr(self, var_name, None)
-        self.refresh_stats()
-        return self
-
+    def moneyStr(self):
+        g = int(self.gold / 10)
+        s = self.gold % 10
+        return f"{g} Gold, {s} Silber"
 
     def get_name(self):
         return self.name + f" (ID={self.id})"
@@ -224,11 +166,6 @@ class Character:
         self.save()
         return f"{self.name} hat nun {self.moneyStr()}!"
 
-    def moneyStr(self):
-        g = int(self.gold / 10)
-        s = self.gold % 10
-        return f"{g} Gold, {s} Silber"
-
     def equipItem(self, item: str):
         if isinstance(item, dict):
             if item["type"] == "armor":
@@ -273,7 +210,6 @@ class Character:
                         exists = True
                         dict_name = dict_names[i]
         return exists, dict_name
-
 
     def probe(self, relevanter_wert: int, bonus: int, probe_name: str):
         if bonus == 0:
@@ -325,6 +261,30 @@ class Character:
         self.fight_gbp = round(self.fight_points/10 + 0.001)
         self.action_gbp = round(self.action_points / 10 + 0.001)
         self.social_gbp = round(self.social_points/10 + 0.001)
+
+    def save(self):
+        if self.grp is not None:
+            self.grp.save()
+
+    def get_member_variables_to_save(self):
+        return ["pre_title", "after_title", "name", "age", "spec", "sex", "bio", "talent_points", "knowledge", "fight",
+                "action", "social", "exp", "gold", "life", "armor", "mainhand", "offhand", "jewelery", "user_id"]
+
+    def save_to_json(self, path):
+        data_dict = {var_name: getattr(self, var_name) for var_name in self.get_member_variables_to_save()}
+        with open(path, 'w') as f:
+            json.dump(data_dict, f)
+
+    def load_from_json(self, path):
+        with open(path, 'r') as f:
+            data_dict = json.load(f)
+        for var_name in self.get_member_variables_to_save():
+            if var_name in data_dict:
+                setattr(self, var_name, data_dict[var_name])
+            else:
+                setattr(self, var_name, None)
+        self.refresh_stats()
+        return self
 
     def __str__(self):
         to_str = f"Name: {self.get_name_full()}, Age: {self.age}, Spec: {self.spec}, Sex: {self.sex}\n"
