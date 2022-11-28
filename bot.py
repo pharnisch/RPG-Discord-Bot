@@ -115,52 +115,16 @@ async def delete(ctx):
 
 @character.child
 @lightbulb.option("bonus", "Bonus/Malus auf die Probe je nach Kontext.")
-@lightbulb.option("knowledge_name", "knowledge name")
+@lightbulb.option("talent_name", "talent name")
 @lightbulb.option("character_name", "character name")
-@lightbulb.command("probe_knowledge", "probe knowledge")
+@lightbulb.command("probe", "probe")
 @lightbulb.implements(lightbulb.SlashSubCommand)
-async def probe_knowledge(ctx):
+async def probe(ctx):
     for char in grp.get_characters():
         if char.name == ctx.options.character_name:
-            answer = char.probe_knowledge(ctx.options.knowledge_name, int(ctx.options.bonus))
+            answer = char.probe_allgemein(ctx.options.talent_name, int(ctx.options.bonus))
             await ctx.respond(answer)
 
-@character.child
-@lightbulb.option("bonus", "Bonus/Malus auf die Probe je nach Kontext.")
-@lightbulb.option("action_name", "action name")
-@lightbulb.option("character_name", "character name")
-@lightbulb.command("probe_action", "probe action")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def probe_action(ctx):
-    for char in grp.get_characters():
-        if char.name == ctx.options.character_name:
-            answer = char.probe_action(ctx.options.action_name, int(ctx.options.bonus))
-            await ctx.respond(answer)
-
-
-@character.child
-@lightbulb.option("bonus", "Bonus/Malus auf die Probe je nach Kontext.")
-@lightbulb.option("fight_name", "fight name")
-@lightbulb.option("character_name", "character name")
-@lightbulb.command("probe_fight", "probe fight")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def probe_action(ctx):
-    for char in grp.get_characters():
-        if char.name == ctx.options.character_name:
-            answer = char.probe_fight(ctx.options.fight_name, int(ctx.options.bonus))
-            await ctx.respond(answer)
-
-@character.child
-@lightbulb.option("bonus", "Bonus/Malus auf die Probe je nach Kontext.")
-@lightbulb.option("social_name", "social name")
-@lightbulb.option("character_name", "character name")
-@lightbulb.command("probe_social", "probe social")
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def probe_social(ctx):
-    for char in grp.get_characters():
-        if char.name == ctx.options.character_name:
-            answer = char.probe_social(ctx.options.social_name, int(ctx.options.bonus))
-            await ctx.respond(answer)
 
 @character.child
 @lightbulb.option("points", "points")

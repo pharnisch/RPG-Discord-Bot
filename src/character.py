@@ -291,49 +291,17 @@ class Character:
         elif wuerfelwurf > relevanter_wert:
             return f"Misserfolg ({wuerfelwurf}) von {self.name} auf die Probe {probe_name}! :(" + add_str
 
-    def probe_fight(self, name: str, erschwert: int = 0):
-        possible, _ = self.talent_possible(name, "fight")
+    def probe_allgemein(self, name: str, erschwert: int = 0):
+        # Talentgruppe herausfinden
+        possible, dict_name = self.talent_possible(name)
         if not possible:
-            return f"Talent {name} is not available in group fight or possible for {self.name}."
+            return f"Talent {name} is not available in group {dict_name} or possible for {self.name}."
         # Probe auf allgemeinen Wert oder konkreten Skill?
-        relevanter_wert = self.fight_points + erschwert
-        if name in self.fight:
-            _relevanter_wert = self.fight[name] + erschwert
+        relevanter_wert = getattr(self, f"{dict_name}_points") + erschwert
+        if name in getattr(self, dict_name):
+            _relevanter_wert = getattr(self, dict_name)[name] + erschwert
             relevanter_wert = max(_relevanter_wert, relevanter_wert)
 
-        return self.probe(relevanter_wert, name)
-
-    def probe_knowledge(self, name: str, erschwert: int = 0):
-        possible, _ = self.talent_possible(name, "knowledge")
-        if not possible:
-            return f"Talent {name} is not available in group knowledge or possible for {self.name}."
-        # Probe auf allgemeinen Wert oder konkreten Skill?
-        relevanter_wert = self.knowledge_points + erschwert
-        if name in self.knowledge:
-            _relevanter_wert = self.knowledge[name] + erschwert
-            relevanter_wert = max(_relevanter_wert, relevanter_wert)
-        return self.probe(relevanter_wert, name)
-
-    def probe_action(self, name: str, erschwert: int = 0):
-        possible, _ = self.talent_possible(name, "action")
-        if not possible:
-            return f"Talent {name} is not available in group action or possible for {self.name}."
-        # Probe auf allgemeinen Wert oder konkreten Skill?
-        relevanter_wert = self.action_points + erschwert
-        if name in self.action:
-            _relevanter_wert = self.action[name] + erschwert
-            relevanter_wert = max(_relevanter_wert, relevanter_wert)
-        return self.probe(relevanter_wert, name)
-
-    def probe_social(self, name: str, erschwert: int = 0):
-        possible, _ = self.talent_possible(name, "social")
-        if not possible:
-            return f"Talent {name} is not available in group social or possible for {self.name}."
-        # Probe auf allgemeinen Wert oder konkreten Skill?
-        relevanter_wert = self.social_points + erschwert
-        if name in self.social:
-            _relevanter_wert = self.social[name] + erschwert
-            relevanter_wert = max(_relevanter_wert, relevanter_wert)
         return self.probe(relevanter_wert, name)
 
     def refresh_stats(self):
