@@ -40,10 +40,18 @@ class Character:
 
         self.refresh_stats()  # calculates self.action_points, self.action_gbp, ...
 
+    def get_items(self):
+        non_empty_items = self.jewelery + [self.armor, self.mainhand, self.offhand]
+        non_empty_items = [i for i in non_empty_items if bool(i) is True]  # filtert leere dicts heraus, denn bool({}) == False
+        return non_empty_items
+
+    def get_stats(self):
+        return ["life", "mana", "initiative", "armor", "damage", "heal"]
+
     def item_stats(self):
         stat_dict = {}
-        items = self.jewelery + [self.armor, self.mainhand, self.offhand]
-        stats = ["life", "mana", "initiative", "armor", "damage", "heal"]
+        items = self.get_items()
+        stats = self.get_stats()
         for stat in stats:
             stat_dict[stat] = 0
         for item in items:
@@ -148,9 +156,14 @@ class Character:
         self.save()
         return f"{self.name} hat nun {self.exp} Erfahrungspunkte!"
 
+    def changeMana(self, amount: int):
+        self.mana += amount
+        if self.mana > self.get_max_mana():
+            self.mana = self.get_max_mana()
+        self.save()
+
     def changeLife(self, amount: int):
         self.life += amount
-
         if self.life > self.get_max_life():
             self.life = self.get_max_life()
         self.save()
@@ -286,10 +299,62 @@ class Character:
         self.refresh_stats()
         return self
 
+    def __item_str__(self, item):
+        stats = self.get_stats()
+        to_str = f"{item['name']} ({item['type']}) | "
+        for s in stats:
+            if s in item:
+                to_str += f"{s}: {item[s]} | "
+        if item["type"] == "mainhand":
+            to_str += f"Damage: {item['attack']['W20']}xW20 + {item['attack']['bonus']} | "
+        return to_str
+
+    def full_str(self):
+        to_str = f":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+        to_str += f"{self.get_name_full()}, {self.age}, {self.sex}, {self.spec}\n"
+        to_str += f"XP.: {self.exp}, {self.moneyStr()} \n"
+        total_health_symbols = round(self.get_max_life()/5)
+        health_symbols = round((self.life/self.get_max_life())*total_health_symbols)
+        to_str += f"HP: {self.life}/{self.get_max_life()} [{'+'*health_symbols}{'-'*(total_health_symbols-health_symbols)}]\n"
+        if self.spec == "besonnen" or self.spec == "arkan":
+            total_mana_symbols = round(self.get_max_mana() / 5)
+            mana_symbols = round((self.mana / self.get_max_mana()) * total_mana_symbols)
+            to_str += f"MP: {self.mana}/{self.get_max_mana()} [{'+' * mana_symbols}{'-' * (total_mana_symbols - mana_symbols)}]\n"
+
+        to_str += f"DEF: {self.get_armor()}, +DMG: {self.get_damage_bonus()}, +HEAL: {self.get_heal_bonus()}, INIT: {self.get_initiative()-self.initiative_roll} (+W20)\n"
+        #to_str += f"Ausgerüstete Gegenstände:\n"
+        for i in self.get_items():
+            to_str += f" * {self.__item_str__(i)}\n"
+        #to_str += f":::..........................................:::::::..........................................:::\n"
+        to_str += f":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+        to_str += f"Knowledge ({self.knowledge_points}, GBP: {self.knowledge_gbp}):\n"
+        for key, val in self.knowledge.items():
+            to_str += f" * {key}: {val}\n"
+        to_str += f"Fight ({self.fight_points}, GBP: {self.fight_gbp}):\n"
+        for key, val in self.fight.items():
+            to_str += f" * {key}: {val}\n"
+        to_str += f"Action ({self.action_points}, GBP: {self.action_gbp}):\n"
+        for key, val in self.action.items():
+            to_str += f" * {key}: {val}\n"
+        to_str += f"Social ({self.social_points}, GBP: {self.social_gbp}):\n"
+        for key, val in self.social.items():
+            to_str += f" * {key}: {val}\n"
+        #to_str += f"::::::................................:::::::::::::::::::::................................::::::\n"
+        to_str += f":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+        #to_str += f"_.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._.-=-._\n"
+        return to_str
+
+    def _mana_str(self):
+        if self.spec == "besonnen" or self.spec == "arkan":
+            return f"MP: {self.mana}/{self.get_max_mana()}, "
+        else:
+            return ""
+
     def __str__(self):
-        to_str = f"Name: {self.get_name_full()}, Age: {self.age}, Spec: {self.spec}, Sex: {self.sex}\n"
-        to_str += f"Leben: {self.life}/{self.get_max_life()}, Mana: {self.mana}/{self.get_max_mana()}, Exp: {self.exp}, {self.moneyStr()} \n"
-        to_str += f"Rüstung: {self.get_armor()}, Bonusschaden: {self.get_damage_bonus()}, Bonusheilung: {self.get_heal_bonus()}, Initiative: {self.get_initiative()-self.initiative_roll} (+W20)\n"
+        to_str = f"{self.get_name_full()}, {self.age}, {self.sex}, {self.spec}\n"
+        to_str += f"HP: {self.life}/{self.get_max_life()}, {self._mana_str()}XP.: {self.exp}, {self.moneyStr()} \n"
+        #to_str += f"Ausgerüstete Gegenstände:"
+        to_str += f"DEF: {self.get_armor()}, +DMG: {self.get_damage_bonus()}, +HEAL: {self.get_heal_bonus()}, INIT: {self.get_initiative()-self.initiative_roll} (+W20)\n"
 
         to_str += f"Knowledge ({self.knowledge_points}, GBP: {self.knowledge_gbp}): {str(self.knowledge)} \n"
         to_str += f"Fight ({self.fight_points}, GBP: {self.fight_gbp}): {str(self.fight)} \n"

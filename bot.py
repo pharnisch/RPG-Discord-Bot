@@ -26,6 +26,7 @@ async def dm(ctx):
 
 @dm.child
 @lightbulb.option("item", "Item")
+@lightbulb.option("mana", "Manapunkte")
 @lightbulb.option("life", "Lebenspunkte")
 @lightbulb.option("exp", "Exp")
 @lightbulb.option("gold", "Gold")
@@ -34,11 +35,30 @@ async def dm(ctx):
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def loot(ctx):
     c = grp.get_character_by_name(ctx.options.name)
-    c.changeGold(int(ctx.options.gold))
-    c.changeExp(int(ctx.options.exp))
-    c.changeLife(int(ctx.options.life))
-    c.equipItem(json.loads(ctx.options.item))
-    await ctx.respond(f"Belohnung verteilt von DM für char {ctx.options.name}")
+    gold_change = int(ctx.options.gold)
+    c.changeGold(gold_change)
+    exp_change = int(ctx.options.exp)
+    c.changeExp(exp_change)
+    life_change = int(ctx.options.life)
+    c.changeLife(life_change)
+    mana_change = int(ctx.options.mana)
+    c.changeMana(mana_change)
+    equip_item = json.loads(ctx.options.item)
+    c.equipItem(equip_item)
+
+    s = f"DM EDIT: {c.name}\n"
+    if gold_change != 0:
+        s += f" * Gold: {gold_change}\n"
+    if exp_change != 0:
+        s += f" * Exp: {exp_change}\n"
+    if life_change != 0:
+        s += f" * Life: {life_change}\n"
+    if mana_change != 0:
+        s += f" * Mana: {mana_change}\n"
+    if isinstance(equip_item, dict):
+        s += f" * Item: {equip_item}\n"
+    await ctx.respond(s)
+    #await ctx.respond(f"Belohnung verteilt von DM für char {ctx.options.name}")
 
 
 @dm.child
@@ -154,6 +174,13 @@ async def skill(ctx):
 async def g(ctx):
     await ctx.respond(str(grp))
 
+
+@bot.command
+@lightbulb.command("mc", "my full character display")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def mc(ctx):
+    chara = grp.get_character_by_user_id(ctx.author.id)
+    await ctx.respond(chara.full_str())
 
 @character.child
 @lightbulb.option("name", "name of character to show")
