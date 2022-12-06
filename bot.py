@@ -29,13 +29,13 @@ async def dm(ctx):
 @lightbulb.option("mana", "Manapunkte")
 @lightbulb.option("life", "Lebenspunkte")
 @lightbulb.option("exp", "Exp")
-@lightbulb.option("gold", "Gold")
+@lightbulb.option("silber", "Silber")
 @lightbulb.option("name", "Character name")
 @lightbulb.command("loot", "Give loot to a character")
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def loot(ctx):
     c = grp.get_character_by_name(ctx.options.name)
-    gold_change = int(ctx.options.gold)
+    gold_change = int(ctx.options.silber)
     c.changeGold(gold_change)
     exp_change = int(ctx.options.exp)
     c.changeExp(exp_change)
@@ -46,9 +46,9 @@ async def loot(ctx):
     equip_item = json.loads(ctx.options.item)
     c.equipItem(equip_item)
 
-    s = f"DM EDIT: {c.name}\n"
+    s = f"DM-Änderung bei {c.name}:\n"
     if gold_change != 0:
-        s += f" * Gold: {gold_change}\n"
+        s += f" * Silber: {gold_change}\n"
     if exp_change != 0:
         s += f" * Exp: {exp_change}\n"
     if life_change != 0:
@@ -63,7 +63,7 @@ async def loot(ctx):
 
 @dm.child
 @lightbulb.option("bonus", "Bonusschaden")
-@lightbulb.option("wuerfel", "Anzahl W10 Würfel")
+@lightbulb.option("wuerfel", "Anzahl W20 Würfel")
 @lightbulb.option("name", "Character name")
 @lightbulb.command("attack", "Attacks a character")
 @lightbulb.implements(lightbulb.SlashSubCommand)
@@ -130,7 +130,25 @@ async def delete(ctx):
 # Schaden/Heilung würfeln
 #################################################
 
+@bot.command
+@lightbulb.option("bonus", "Bonusschaden")
+@lightbulb.option("wuerfel", "Anzahl W20 Würfel")
+@lightbulb.command("a", "attack")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def a(ctx):
+    c = grp.get_character_by_user_id(ctx.author.id)
+    wuerfel, bonus = c.attack(int(ctx.options.wuerfel), int(ctx.options.bonus))
+    await ctx.respond(f"Charakter {c.name} macht {wuerfel} + {bonus} = {sum(wuerfel)+bonus} Schaden.")
 
+@bot.command
+@lightbulb.option("bonus", "Bonusschaden")
+@lightbulb.option("wuerfel", "Anzahl W20 Würfel")
+@lightbulb.command("h", "heal")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def h(ctx):
+    c = grp.get_character_by_user_id(ctx.author.id)
+    wuerfel, bonus = c.attack(int(ctx.options.wuerfel), int(ctx.options.bonus))
+    await ctx.respond(f"Charakter {c.name} wirkt {wuerfel} + {bonus} = {sum(wuerfel)+bonus} Heilung.")
 
 #################################################
 # Proben würfeln
