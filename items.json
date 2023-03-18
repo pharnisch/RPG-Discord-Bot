@@ -1,0 +1,68 @@
+{
+  "type": "mainhand",
+  "name": "Silberschild",
+  "armor": 3
+}
+
+50g
+{
+  "type": "armor",
+  "name": "Kupferrüstung",
+  "armor": 5,
+  "max_life": 10
+}
+
+
+{
+  "type": "offhand",
+  "name": "Halbes Bierfass",
+  "armor": 1
+}
+
+{
+  "type": "armor",
+  "name": "Zwergentracht",
+  "armor": 5
+}
+
+
+{
+  "type": "mainhand",
+  "name": "Bogen",
+  "attack": {
+   "W20": 2,
+    "bonus": 10
+  }
+}
+
+100g
+{
+  "type": "armor",
+  "name": "Instabile Magierüstung",
+  "armor": 6,
+  "max_life": -20
+}
+{
+  "type": "jewelery",
+  "name": "Leichtes Heilungsamulett",
+  "heal": 5,
+  "mana": 5
+}
+
+{
+  "type": "armor",
+  "name": "Paladinfestung",
+  "heal": 10,
+  "life": 10,
+  "mana": 10,
+  "damage": 10,
+  "armor": 10,
+  "initiative": 10,
+}
+
+
+
+Instabiler Zauberstab
++ 60 mana
+- 5 initiative
++ 25 magieschaden

@@ -1,0 +1,74 @@
+Bot Token
+
+MTA0MTAxNjY1NzQzMjI5NzU2Mg.Gkwsyw.I5BZWbe1SGVmVfMjZr9euO07CLO_IPEUZoQ8kY
+
+
+Meridia Konzept:
+
+Dieser Bot soll Pen and Paper Spielern bei der Charaktererstellung und Bearbeitung unterstützen.
+Über einfache /commands soll ein Spieler einen Charakter erstellen und verwalten können.
+
+Charaktererstellung erfordert erstmal eine Biografie des Charakters:
+
+Charakterbogen:
+
+Name: "keine Auswirkungen auf den Spieler"
+Alter: "Multiplikator auf Begabungen möglich"
+Klasse: "Nach erlangen einer Klasse werden die Begabungen der Klasse dem Spieler gewährt."
+Geschlecht: "Beeinflusst Interaktionen wie Bezaubern, Verführen ect."
+Beschreibung:
+Hier wird eine kurze Geschichte zu diesem Charakter erzählt welche als Beschreibung
+dienen soll.
+
+Danach können 400 Punkte auf Fähigkeiten in Begabungen verteilt werden.
+
+Am Ende des Verteilens werden die ausgegebenen Punkte einer Begabung addiert und durch 10 geteilt
+um die Begabungswerte zu errechnen. Diese werden anschließend auf die Fähigkeiten addiert.
+Je mehr Punkte in einer Begabung liegen umso höher ist der Bonus.
+
+Die Geistesblitzpunkte werden errechnet indem man die Begabungswerte ebenfalls durch 10 Teilt und aufrundet.
+
+		Handeln		Wissen		Soziales
+Begabung	:	
+GP		:	
+Ausgegeben	:	
+Skill		:	
+
+
+Welche Funktionen muss ich dem Bot also nun geben?
+
+/character list
+Druckt die Liste der Charaktere aus.
+FERTIG
+
+/character list name
+Druckt einen Spezifischen Charakter aus.
+
+/character create name
+Erstellt einen benannten Charakter nach oben beschriebenem Schema
+und fügt ihn der Charakterliste hinzu.
+FERTIG
+
+/character create name age class sex description
+Erlaubt das Erstellen eines vollständigen Charakterprofils ohne Fähigkeiten.
+FERTIG
+
+/character edit name parameter value
+Erlaubt das Bearbeiten der Parameter des Charakters.
+
+/character delete name
+Erlaubt das Löschen eines Charakters.
+
+/character name begabung add name value
+Erlaubt das Hinzufügen eines Skills zu einem Charakter, zieht Punkte vom Punktekonto ab und vergibt Punkte auf den Skill.
+Falls die zu vergebenden Punkte das Punktekonto unter null reduzieren würden wird eine Fehlermeldung ausgespuckt.
+
+/character name begabung del name
+Erlaubt das Entfernen eines Skills eines Charakters, entfernt die Punkte und addiert sie auf das Punktekonto.
+
+
+Zusätzlich dazu könnte man Meridia nun auch Grundlegend die Fähigkeit geben eine Kampagne zu verwalten und Spieler daran hindern in ein laufendes Spiel einzugreifen und die Werte zu verändern.
+Lediglich der Spielleiter ist dazu berechtigt.
+
+Hat eine Kampagne begonnen so kann der Charakter vom Spieler nicht mehr bearbeitet werden.
+Dies kann man aber später implementieren.
